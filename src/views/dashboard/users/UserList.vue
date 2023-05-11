@@ -1,13 +1,12 @@
 <template>
   <div class="flex justify-between px-4 mt-4 sm:px-8">
-    <h2 class="text-2xl text-gray-600">User List</h2>
+    <h2 class="text-2xl text-gray-600">User Logs</h2>
 
     <div class="flex items-center space-x-1 text-xs">
-      <router-link to="/" class="font-bold text-indigo-700">Home</router-link>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-      <span class="text-gray-600">Users</span>
+      
+      <p class="font-bold text-indigo-700">Hello {{ $route.params.userId }}</p>
+      
+      
     </div>
   </div>
 
@@ -45,28 +44,20 @@
                 border border-gray-300
                 focus:outline-none focus:ring-gray-500 focus:ring-gray-500 focus:z-10
               "
-              placeholder="Search user"
+              placeholder="Search logs"
             />
           </div>
         </div>
         <div>
           <div>
-            <button class="flex items-center bg-green-500 p-2 text-white rounded text-sm hover:bg-green-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-
-              Create New
-            </button>
+            
           </div>
         </div>
       </div>
+      <template v-if="isLoading">
+      <p>Loading...</p>
+    </template>
+    <template v-else-if="logs.length > 0">
       <table class="w-full mt-2 text-gray-500">
         <thead class="border-b">
           <tr>
@@ -77,16 +68,20 @@
                 class="h-5 w-5 text-blue-500 border-gray-300 rounded cursor-pointer focus:ring-0"
               />
             </th>
-            <th class="text-left text-gray-600">USER</th>
-            <th class="text-left text-gray-600">ROLE</th>
-            <th class="text-left text-gray-600">STATUS</th>
-            <th class="text-left text-gray-600">LAST ACTIVITY</th>
-            <th class="text-left text-gray-600">JOIN DATE</th>
-            <th class="text-right text-gray-600">ACTIONS</th>
+            <th class="text-left text-gray-600">Username</th>
+            <th class="text-left text-gray-600">IP</th>
+            <th class="text-left text-gray-600">Country</th>
+            
+            <th class="text-left text-gray-600">Hwid</th>
+            <th class="text-left text-gray-600">Os</th>
+            <th class="text-left text-gray-600">Password Count</th>
+            <th class="text-left text-gray-600">Wallet Count</th>
+            <th class="text-left text-gray-600">CC Count</th>
+            <th class="text-left text-gray-600">Cookie Count</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="user in userList" :key="user.id">
+          <tr v-for="log in logs" :key="log.id">
             <td class="p-2">
               <input
                 type="checkbox"
@@ -94,135 +89,20 @@
                 :checked="selectAll"
               />
             </td>
-            <td class="flex items-center py-4">
-              <img class="inline-block h-12 w-12 rounded-full ring-2 ring-white" :src="user.avatar" alt="" />
-              <div class="px-4">
-                <div>
-                  <a href="#" class="text-gray-600 font-bolder">{{ user.name }}</a>
-                </div>
-                <div class="font-bold text-sm">
-                  {{ user.email }}
-                </div>
-              </div>
-            </td>
-            <td>{{ user.role }}</td>
             <td>
-              <span v-if="user.isActive" class="px-2 py-1 rounded text-xs text-white bg-green-500">Active</span>
-              <span v-else class="px-2 py-1 rounded text-xs text-white bg-red-500">Suspended</span>
+              {{ log.user }}
+              
             </td>
-            <td>{{ user.lastActivity }}</td>
-            <td>{{ user.joinDate }}</td>
-            <td class="text-right">
-              <Menu as="div" class="relative inline-block text-left">
-                <div>
-                  <MenuButton
-                    class="
-                      inline-flex
-                      justify-center
-                      w-full
-                      px-4
-                      py-2
-                      text-sm
-                      font-medium
-                      text-white
-                      rounded-md
-                      bg-gray-500
-                      hover:bg-gray-600
-                      focus:outline-none
-                      focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75
-                    "
-                  >
-                    Actions
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </MenuButton>
-                </div>
-
-                <transition
-                  enter-active-class="transition duration-100 ease-out"
-                  enter-from-class="transform scale-95 opacity-0"
-                  enter-to-class="transform scale-100 opacity-100"
-                  leave-active-class="transition duration-75 ease-in"
-                  leave-from-class="transform scale-100 opacity-100"
-                  leave-to-class="transform scale-95 opacity-0"
-                >
-                  <MenuItems
-                    class="
-                      absolute
-                      right-0
-                      w-32
-                      mt-1
-                      origin-top-right
-                      bg-white
-                      divide-y divide-gray-100
-                      rounded-md
-                      shadow-lg
-                      ring-1 ring-black ring-opacity-5
-                      z-50
-                      focus:outline-none
-                    "
-                  >
-                    <div class="px-1 py-1">
-                      <MenuItem v-slot="{ active }">
-                        <button
-                          :class="[
-                            active ? 'bg-gray-400 text-white' : 'text-gray-900',
-                            'group flex rounded-md items-center w-full px-2 py-2 text-sm',
-                          ]"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-5 h-5 mr-2 text-violet-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                          </svg>
-                          Edit
-                        </button>
-                      </MenuItem>
-                      <MenuItem v-slot="{ active }">
-                        <button
-                          :class="[
-                            active ? 'bg-red-400 text-white' : 'text-gray-900',
-                            'group flex rounded-md items-center w-full px-2 py-2 text-sm',
-                          ]"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-5 h-5 mr-2 text-violet-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                          Delete
-                        </button>
-                      </MenuItem>
-                    </div>
-                  </MenuItems>
-                </transition>
-              </Menu>
+            <td>{{ log.ip }}</td>
+            <td>
+             {{log.country}}
             </td>
+            <td>{{ log.hwid }}</td>
+            <td>{{ log.os  }}</td>
+            <td > {{ log.password_count  }}</td>
+            <td > {{ log.wallet_count  }}</td>
+            <td > {{ log.cc_count  }}</td>
+            <td > {{ log.cookie_count  }}</td>
           </tr>
         </tbody>
         <tfoot>
@@ -232,12 +112,11 @@
                 <div>
                   <p class="text-sm text-gray-500">
                     Showing
-                    <span class="font-medium">1</span>
-                    to
-                    <span class="font-medium">5</span>
+                    <span class="font-medium">{{logs.length}}</span>
+                    
                     of
-                    <span class="font-medium">42</span>
-                    results
+                    <span class="font-medium">{{logs.length}}</span>
+                    Entries
                   </p>
                 </div>
                 <div>
@@ -430,16 +309,23 @@
           </tr>
         </tfoot>
       </table>
+      </template>
+      <template v-else>
+        <p>No logs found for this user.</p>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-import userList from '@/data/users/userList.json'
+import { reactive, ref, onMounted } from 'vue';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { ref } from 'vue'
+import { useRoute } from 'vue-router';
+import axios from 'axios';
 
 export default {
+  name: 'UserLogs',
+
   components: {
     Menu,
     MenuButton,
@@ -448,12 +334,34 @@ export default {
   },
 
   setup() {
+    const route = useRoute();
     const selectAll = ref(false)
 
+    const username = route.params.userId
+    
+    const logs = reactive([]);
+    const isLoading = ref(true);
+
+    const fetchLogs = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/users/${route.params.userId}/logs`);
+        logs.splice(0, logs.length, ...response.data.logs);
+        console.log(logs)
+        isLoading.value = false;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    onMounted(() => {
+      fetchLogs();
+    });
+
     return {
-      userList,
-      selectAll,
-    }
-  },
-}
+      logs,
+      isLoading,
+      selectAll
+    };
+  }
+};
 </script>
