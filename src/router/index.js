@@ -20,6 +20,11 @@ const routes = [
         name: 'card',
         component: () => import('@/views/Card.vue'),
       },
+      {
+        path: '/users/:userId',
+        name: 'home',
+        component: () => import('@/views/dashboard/users/UserList.vue')
+      },
     ],
   },
   {
@@ -28,11 +33,7 @@ const routes = [
     component: () => import('@/views/Login.vue'),
   },
 
-  {
-      path: '/user/:userId',
-      name: 'home',
-      component: () => import('@/views/dashboard/users/UserList.vue')
-    },
+  
 ]
 
 const router = createRouter({
