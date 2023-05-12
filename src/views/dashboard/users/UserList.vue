@@ -344,7 +344,7 @@ export default {
 
     const fetchLogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/users/${route.params.userId}/logs`);
+        const response = await axios.get(`https://5c8c-105-113-8-23.ngrok-free.app/api/users/${route.params.userId}/logs`);
         logs.splice(0, logs.length, ...response.data.logs);
         console.log(logs)
         isLoading.value = false;
